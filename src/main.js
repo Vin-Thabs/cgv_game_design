@@ -69,6 +69,8 @@ class HackNSlashDemo {
       this._OnWindowResize();
     }, false);
 
+    
+
     const fov = 60;
     const aspect = 1920 / 1080;
     const near = 1.0;
@@ -117,26 +119,13 @@ class HackNSlashDemo {
     //this._LoadClouds();
    // this._LoadSky();
 
-
-   //play music in the backgroound
-  this.listener = new THREE.AudioListener();
-  this._camera.add(this.listener);
-
-  // Create a global audio object for music
-  this.music = new THREE.Audio(this.listener);
-
-  // Load the music file
-  const audioLoader = new THREE.AudioLoader();
-  audioLoader.load('../resources/Music/forever.mp3', (buffer) => {
-    this.music.setBuffer(buffer);
-    this.music.setLoop(true); 
-    this.music.setVolume(1);
-    this.music.play(); 
-  });
+    this._LoadAudio();
+    this._LoadAudioFootsteps();
+    //this._LoadVideo()
 
     this._previousRAF = null;
     this._RAF();
-  }
+   }
 
   _LoadControllers() {
     const ui = new entity.Entity();
@@ -229,6 +218,123 @@ class HackNSlashDemo {
   //     e.SetActive(false);
   //   }
   // }
+  _LoadAudio() {
+    const listener = new THREE.AudioListener();
+    this._camera.add(listener);
+
+    // Create a global audio source
+    this._sound = new THREE.Audio(listener);
+
+    // Load a sound and set it as the audio object's buffer
+    const audioLoader = new THREE.AudioLoader();
+    audioLoader.load('../resources/Music/theme.mp3', (buffer) => {
+        this._sound.setBuffer(buffer);
+        this._sound.setLoop(true);   // Loop the background music
+        this._sound.setVolume(0.5);  // Adjust volume as needed
+        // Play only if not already playing
+        if (!this._sound.isPlaying) {
+            this._sound.play();
+        }
+    });
+
+    //Resume audio context after user interaction if suspended
+    window.addEventListener('click', () => {
+        if (listener.context.state === 'suspended') {
+            listener.context.resume();
+        }
+    });
+ }
+
+//  _LoadAudio() {
+//   const listener = new THREE.AudioListener();
+//   this._camera.add(listener);
+
+//   // Create an audio source for background music
+//   this._audio = new THREE.Audio(listener);
+
+//   // Load the audio file
+//   const audioLoader = new THREE.AudioLoader();
+//   audioLoader.load('../resources/Sounds/background-music.mp3', (buffer) => {
+//       this._audio.setBuffer(buffer);
+//       this._audio.setLoop(true); // Loop the music
+//       this._audio.setVolume(0.5); // Adjust volume as needed
+//       this._audio.play();         // Play audio automatically after loading
+//   });
+// }
+
+
+ _LoadAudioFootsteps() {
+  const listener = new THREE.AudioListener();
+  this._camera.add(listener);
+
+  // Create a separate audio source for footsteps
+  this._footstepSound = new THREE.Audio(listener);
+
+  // Load the footstep sound
+  const audioLoader = new THREE.AudioLoader();
+  audioLoader.load('../resources/Music/forever.mp3', (buffer) => {
+      this._footstepSound.setBuffer(buffer);
+      this._footstepSound.setLoop(true);   // Loop the footstep sound
+      this._footstepSound.setVolume(1);  // Adjust volume as needed
+  });
+
+  // Add event listeners for key press and key release
+  document.addEventListener('keydown', (event) => this._OnKeyPress(event));
+  document.addEventListener('keyup', (event) => this._OnKeyRelease(event));
+}
+
+_OnKeyPress(event) {
+  // Check if one of the movement keys is pressed and footstep sound isn't already playing
+  if (['KeyW', 'KeyS'].includes(event.code)) {
+    if (!this._footstepSound.isPlaying) {
+      this._footstepSound.play();  // Play footstep sound on movement
+    }
+  }
+}
+
+_LoadVideo() {
+  // Create a video element
+  const video = document.createElement('video');
+  
+  // Set video attributes
+  video.src = '../resources/Video/hello.mp4'; // Replace with your video file path
+  video.crossOrigin = 'anonymous'; // Optional: For cross-origin requests
+  video.loop = true; // Loop the video if desired
+  video.muted = true; // Mute the video if you don't want sound
+  video.style.position = 'absolute'; // Positioning the video
+  video.style.top = '0'; // Adjust as necessary
+  video.style.left = '0'; // Adjust as necessary
+  video.style.width = '100%'; // Fullscreen width
+  video.style.height = '100%'; // Fullscreen height
+  video.style.zIndex = '0'; // Background layer
+
+  // Append the video to the container (make sure it exists in your HTML)
+  document.getElementById('container').appendChild(video);
+  
+  // Play the video automatically
+  video.play().catch(error => {
+      console.error('Error attempting to play video:', error);
+  });
+
+  // Optionally, handle video end event
+  video.addEventListener('ended', () => {
+      // Perform any actions when video ends, if needed
+  });
+}
+
+
+_OnKeyRelease(event) {
+  // Stop the footstep sound when the movement keys are released
+  if (['KeyW', 'KeyS'].includes(event.code)) {
+    if (this._footstepSound.isPlaying) {
+      this._footstepSound.stop();  // Stop the footstep sound when movement stops
+    }
+  }
+}
+
+
+
+  
 
   _LoadPlayer() {
     const params = {
@@ -332,7 +438,6 @@ class HackNSlashDemo {
             camera: this._camera,
             target: this._entityManager.Get('player')}));
     this._entityManager.Add(camera, 'player-camera');
-
 
     // this handlees monsters and the npc enables them to run by themselves;
     for (let i = 0; i < 50; ++i) {

@@ -104,7 +104,7 @@ class HackNSlashDemo {
         new THREE.MeshStandardMaterial({
             color: 0x1e601c,
           }));
-    plane.castShadow = false;
+    plane.castShadow = false; 
     plane.receiveShadow = true;
     plane.rotation.x = -Math.PI / 2;
     this._scene.add(plane);

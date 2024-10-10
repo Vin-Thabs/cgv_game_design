@@ -18,6 +18,7 @@ import {spatial_grid_controller} from './spatial-grid-controller.js';
 import {inventory_controller} from './inventory-controller.js';
 import {equip_weapon_component} from './equip-weapon-component.js';
 import {attack_controller} from './attacker-controller.js';
+import { MazeGenerator } from './wall.js';
 
 
 // const _VS = `
@@ -79,10 +80,10 @@ class HackNSlashDemo {
     this._camera.position.set(25, 10, 25);
 
     this._scene = new THREE.Scene();
-    this._scene.background = new THREE.Color(0xFFFFFF);
-    this._scene.fog = new THREE.FogExp2(0x89b2eb, 0.002);
+    this._scene.background = new THREE.Color(0xD3D3D3);
+    this._scene.fog = new THREE.FogExp2(0x36454F, 0.02);//fog
 
-    let light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+    let light = new THREE.DirectionalLight(0xD3D3D3, 0.2);
     light.position.set(-10, 500, 10);
     light.target.position.set(0, 0, 0);
     light.castShadow = true;
@@ -102,7 +103,7 @@ class HackNSlashDemo {
     const plane = new THREE.Mesh(
         new THREE.PlaneGeometry(500, 500, 10, 10),
         new THREE.MeshStandardMaterial({
-            color: 0x1e601c,
+            color: 0x36454F, //floor color
           }));
     plane.castShadow = false; 
     plane.receiveShadow = true;
@@ -116,7 +117,6 @@ class HackNSlashDemo {
     this._LoadControllers();
     this._LoadPlayer();
     this._LoadFoliage();
-    //this._LoadClouds();
     this._LoadWall();
 
     //this._LoadAudio();
@@ -134,65 +134,16 @@ class HackNSlashDemo {
   }
 
   _LoadWall() {
-    const textureLoader = new THREE.TextureLoader();
-    const wallTexture = textureLoader.load('../images/brickwall.jpeg');
-  
-    const wallMaterial = new THREE.MeshStandardMaterial({
-      map: wallTexture,
-    });
-  
-    const wallHeight = 100;
-    const wallThickness = 1;
-    const wallLength = 500;
-    const wallGeometry = new THREE.BoxGeometry(wallLength, wallHeight, wallThickness);
-    const wall1 = new THREE.Mesh(wallGeometry, wallMaterial);
-    wall1.position.set(0, wallHeight / 2, -wallLength / 2);
-    this._scene.add(wall1);
-  
-    const wall2 = new THREE.Mesh(wallGeometry, wallMaterial);
-    wall2.position.set(0, wallHeight / 2, wallLength / 2);
-    this._scene.add(wall2);
-
-  
-    const sideWallGeometry = new THREE.BoxGeometry(wallThickness, wallHeight, wallLength);
-    const wall3 = new THREE.Mesh(sideWallGeometry, wallMaterial);
-    wall3.position.set(-wallLength / 2, wallHeight / 2, 0);
-    this._scene.add(wall3);
-  
-    const wall4 = new THREE.Mesh(sideWallGeometry, wallMaterial);
-    wall4.position.set(wallLength / 2, wallHeight / 2, 0); 
-    this._scene.add(wall4);
+    const mazeGenerator = new MazeGenerator(this._scene);
+    mazeGenerator.buildMaze();
   }
   
-
-  // _LoadClouds() {
-  //   for (let i = 0; i < 20; ++i) {
-  //     const index = math.rand_int(1, 3);
-  //   const pos = new THREE.Vector3(
-  //       (Math.random() * 2.0 - 1.0) * 500,
-  //       100,
-  //       (Math.random() * 2.0 - 1.0) * 500);
-
-  //     const e = new entity.Entity();
-  //     e.AddComponent(new gltf_component.StaticModelComponent({
-  //       scene: this._scene,
-  //       resourcePath: './resources/nature2/GLTF/',
-  //       resourceName: 'Cloud' + index + '.glb',
-  //       position: pos,
-  //       scale: Math.random() * 5 + 10,
-  //       emissive: new THREE.Color(0x808080),
-  //     }));
-  //     e.SetPosition(pos);
-  //     this._entityManager.Add(e);
-  //     e.SetActive(false);
-  //   }
-  // }
 
   _LoadFoliage() {
 
     //List of things to load wothin the dungeon
 
-    for (let i = 0; i < 4; ++i) {
+    for (let i = 0; i < 50; ++i) {
       const names = [
           'CommonTree_Dead', 'CommonTree',
           'BirchTree', 'BirchTree_Dead',
@@ -207,9 +158,6 @@ class HackNSlashDemo {
           (Math.random() * 2.0 - 1.0) * 500/2,
           0,
           (Math.random() * 2.0 - 1.0) * 500/2);
-
-
-      // const pos = wallPositions[i];
 
       const e = new entity.Entity();
       e.AddComponent(new gltf_component.StaticModelComponent({
@@ -448,7 +396,7 @@ _OnKeyRelease(event) {
     this._entityManager.Add(camera, 'player-camera');
 
     // this handlees monsters and the npc enables them to run by themselves;
-    for (let i = 0; i < 50; ++i) {
+    for (let i = 0; i < 10; ++i) {
       const monsters = [
         {
           resourceName: 'Ghost.fbx',

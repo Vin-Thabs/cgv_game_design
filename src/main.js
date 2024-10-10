@@ -100,7 +100,7 @@ class HackNSlashDemo {
     this._sun = light;
 
     const plane = new THREE.Mesh(
-        new THREE.PlaneGeometry(10000, 10000, 10, 10),
+        new THREE.PlaneGeometry(500, 500, 10, 10),
         new THREE.MeshStandardMaterial({
             color: 0x1e601c,
           }));
@@ -115,12 +115,12 @@ class HackNSlashDemo {
 
     this._LoadControllers();
     this._LoadPlayer();
-    //this._LoadFoliage();
+    this._LoadFoliage();
     //this._LoadClouds();
-   // this._LoadSky();
+    this._LoadWall();
 
-    this._LoadAudio();
-    this._LoadAudioFootsteps();
+    //this._LoadAudio();
+    //this._LoadAudioFootsteps();
     //this._LoadVideo()
 
     this._previousRAF = null;
@@ -133,33 +133,37 @@ class HackNSlashDemo {
     this._entityManager.Add(ui, 'ui');
   }
 
-  // _LoadSky() {
-  //   const hemiLight = new THREE.HemisphereLight(0xFFFFFF, 0xFFFFFFF, 0.6);
-  //   hemiLight.color.setHSL(0.6, 1, 0.6);
-  //   hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-  //   this._scene.add(hemiLight);
+  _LoadWall() {
+    const textureLoader = new THREE.TextureLoader();
+    const wallTexture = textureLoader.load('../images/brickwall.jpeg');
+  
+    const wallMaterial = new THREE.MeshStandardMaterial({
+      map: wallTexture,
+    });
+  
+    const wallHeight = 100;
+    const wallThickness = 1;
+    const wallLength = 500;
+    const wallGeometry = new THREE.BoxGeometry(wallLength, wallHeight, wallThickness);
+    const wall1 = new THREE.Mesh(wallGeometry, wallMaterial);
+    wall1.position.set(0, wallHeight / 2, -wallLength / 2);
+    this._scene.add(wall1);
+  
+    const wall2 = new THREE.Mesh(wallGeometry, wallMaterial);
+    wall2.position.set(0, wallHeight / 2, wallLength / 2);
+    this._scene.add(wall2);
 
-  //   const uniforms = {
-  //     "topColor": { value: new THREE.Color(0x0077ff) },
-  //     "bottomColor": { value: new THREE.Color(0xffffff) },
-  //     "offset": { value: 33 },
-  //     "exponent": { value: 0.6 }
-  //   };
-  //   uniforms["topColor"].value.copy(hemiLight.color);
-
-  //   this._scene.fog.color.copy(uniforms["bottomColor"].value);
-
-  //   const skyGeo = new THREE.SphereBufferGeometry(1000, 32, 15);
-  //   const skyMat = new THREE.ShaderMaterial({
-  //       uniforms: uniforms,
-  //       vertexShader: _VS,
-  //       fragmentShader: _FS,
-  //       side: THREE.BackSide
-  //   });
-
-  //   const sky = new THREE.Mesh(skyGeo, skyMat);
-  //   this._scene.add(sky);
-  // }
+  
+    const sideWallGeometry = new THREE.BoxGeometry(wallThickness, wallHeight, wallLength);
+    const wall3 = new THREE.Mesh(sideWallGeometry, wallMaterial);
+    wall3.position.set(-wallLength / 2, wallHeight / 2, 0);
+    this._scene.add(wall3);
+  
+    const wall4 = new THREE.Mesh(sideWallGeometry, wallMaterial);
+    wall4.position.set(wallLength / 2, wallHeight / 2, 0); 
+    this._scene.add(wall4);
+  }
+  
 
   // _LoadClouds() {
   //   for (let i = 0; i < 20; ++i) {
@@ -184,40 +188,47 @@ class HackNSlashDemo {
   //   }
   // }
 
-  // _LoadFoliage() {
-  //   for (let i = 0; i < 100; ++i) {
-  //     const names = [
-  //         'CommonTree_Dead', 'CommonTree',
-  //         'BirchTree', 'BirchTree_Dead',
-  //         'Willow', 'Willow_Dead',
-  //         'PineTree',
-  //     ];
-  //     const name = names[math.rand_int(0, names.length - 1)];
-  //     const index = math.rand_int(1, 5);
+  _LoadFoliage() {
 
-  //     const pos = new THREE.Vector3(
-  //         (Math.random() * 2.0 - 1.0) * 500,
-  //         0,
-  //         (Math.random() * 2.0 - 1.0) * 500);
+    //List of things to load wothin the dungeon
 
-  //     const e = new entity.Entity();
-  //     e.AddComponent(new gltf_component.StaticModelComponent({
-  //       scene: this._scene,
-  //       resourcePath: './resources/nature/FBX/',
-  //       resourceName: name + '_' + index + '.fbx',
-  //       scale: 0.25,
-  //       emissive: new THREE.Color(0x000000),
-  //       specular: new THREE.Color(0x000000),
-  //       receiveShadow: true,
-  //       castShadow: true,
-  //     }));
-  //     e.AddComponent(
-  //         new spatial_grid_controller.SpatialGridController({grid: this._grid}));
-  //     e.SetPosition(pos);
-  //     this._entityManager.Add(e);
-  //     e.SetActive(false);
-  //   }
-  // }
+    for (let i = 0; i < 4; ++i) {
+      const names = [
+          'CommonTree_Dead', 'CommonTree',
+          'BirchTree', 'BirchTree_Dead',
+          'Willow', 'Willow_Dead',
+          'P,ineTree'
+          
+      ];
+      const name = names[math.rand_int(0, names.length - 1)];
+      const index = math.rand_int(1, 4);
+
+      const pos = new THREE.Vector3(
+          (Math.random() * 2.0 - 1.0) * 500/2,
+          0,
+          (Math.random() * 2.0 - 1.0) * 500/2);
+
+
+      // const pos = wallPositions[i];
+
+      const e = new entity.Entity();
+      e.AddComponent(new gltf_component.StaticModelComponent({
+        scene: this._scene,
+        resourcePath: './resources/nature/FBX/',
+        resourceName: name + '_' + index + '.fbx',
+        scale: 0.25,
+        emissive: new THREE.Color(0x000000),
+        specular: new THREE.Color(0x000000),
+        receiveShadow: true,
+        castShadow: true,
+      }));
+      e.AddComponent(
+          new spatial_grid_controller.SpatialGridController({grid: this._grid}));
+      e.SetPosition(pos);
+      this._entityManager.Add(e);
+      e.SetActive(false);
+    }
+  }
   _LoadAudio() {
     const listener = new THREE.AudioListener();
     this._camera.add(listener);
@@ -332,9 +343,6 @@ _OnKeyRelease(event) {
   }
 }
 
-
-
-  
 
   _LoadPlayer() {
     const params = {
@@ -497,9 +505,9 @@ _OnKeyRelease(event) {
       }));
       npc.AddComponent(new attack_controller.AttackController({timing: 0.35}));
       npc.SetPosition(new THREE.Vector3(
-          (Math.random() * 2 - 1) * 500,
+          (Math.random() * 2 - 1) * 500/2,
           0,
-          (Math.random() * 2 - 1) * 500));
+          (Math.random() * 2 - 1) * 500/2));
       this._entityManager.Add(npc);
     }
   }

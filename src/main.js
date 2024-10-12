@@ -119,8 +119,8 @@ class HackNSlashDemo {
     this._LoadFoliage();
     this._LoadWall();
 
-    //this._LoadAudio();
-    //this._LoadAudioFootsteps();
+    // this._LoadAudio();
+    // this._LoadAudioFootsteps();
     //this._LoadVideo()
 
     this._previousRAF = null;
@@ -436,7 +436,7 @@ _OnKeyRelease(event) {
           new health_component.HealthComponent({
               health: 100,
               maxHealth: 100,
-              strength: 10,
+              strength: 2,
               wisdomness: 2,
               benchpress: 3,
               curl: 1,

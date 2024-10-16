@@ -85,7 +85,6 @@ export class MazeGenerator {
 
   buildMaze() {
     const halfCell = this._cellSize / 2;
-
     // Iterate through the maze grid and place walls based on cell data
     for (let y = 0; y < this._mazeHeight; y++) {
       for (let x = 0; x < this._mazeWidth; x++) {

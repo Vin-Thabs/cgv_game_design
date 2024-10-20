@@ -19,6 +19,7 @@ import {inventory_controller} from './inventory-controller.js';
 import {equip_weapon_component} from './equip-weapon-component.js';
 import {attack_controller} from './attacker-controller.js';
 import { MazeGenerator } from './wall.js';
+import { displayMenu, volume, difficulty, waveLength} from './menu.js';
 
 
 // const _VS = `
@@ -101,14 +102,60 @@ class HackNSlashDemo {
     this._sun = light;
 
     const plane = new THREE.Mesh(
-        new THREE.PlaneGeometry(250, 250, 10, 10),
+        new THREE.PlaneGeometry(300, 300, 10, 10),
         new THREE.MeshStandardMaterial({
-            color: 0x1e601c, //floor color
+            color: 0x36454F, //floor color
           }));
     plane.castShadow = false; 
     plane.receiveShadow = true;
     plane.rotation.x = -Math.PI / 2;
     this._scene.add(plane);
+
+    // Roof over the box
+    const roof = new THREE.Mesh(
+      new THREE.PlaneGeometry(300, 300),
+      new THREE.MeshStandardMaterial({ color: 0x36454F })  // Roof color (light grey)
+    );
+    roof.position.set(0, 30, 0);  // Position it above the walls
+    roof.rotation.x = Math.PI / 2;  // Flat, facing downward
+    roof.castShadow = true;
+    this._scene.add(roof);
+
+    // Add the front wall (Z axis)
+    const frontWall = new THREE.Mesh(
+      new THREE.BoxGeometry(300, 30, 5),  // Width, Height, Thickness
+      new THREE.MeshStandardMaterial({ color: 0x36454F })  // Wall color (grey)
+    );
+    frontWall.position.set(0, 15, -150);  // Centered on X axis, 25 units high, placed at -150 on Z axis
+    frontWall.castShadow = true;
+    this._scene.add(frontWall);
+
+    // Add the back wall (Z axis)
+    const backWall = new THREE.Mesh(
+      new THREE.BoxGeometry(300, 30, 5),  // Width, Height, Thickness
+      new THREE.MeshStandardMaterial({ color: 0x36454F })  // Wall color (grey)
+    );
+    backWall.position.set(0, 15, 150);  // Centered on X axis, 15 units high, placed at 150 on Z axis
+    backWall.castShadow = true;
+    this._scene.add(backWall);
+
+    // Add the left wall (X axis)
+    const leftWall = new THREE.Mesh(
+      new THREE.BoxGeometry(5, 30, 300),  // Thickness, Height, Depth
+      new THREE.MeshStandardMaterial({ color: 0x36454F })  // Wall color (grey)
+    );
+    leftWall.position.set(-150, 15, 0);  // Placed at -150 on X axis, 15 units high, centered on Z axis
+    leftWall.castShadow = true;
+    this._scene.add(leftWall);
+
+    // Add the right wall (X axis)
+    const rightWall = new THREE.Mesh(
+      new THREE.BoxGeometry(5, 30, 300),  // Thickness, Height, Depth
+      new THREE.MeshStandardMaterial({ color: 0x36454F })  // Wall color (grey)
+    );
+    rightWall.position.set(150, 15, 0);  // Placed at 150 on X axis, 15 units high, centered on Z axis
+    rightWall.castShadow = true;
+    this._scene.add(rightWall);
 
     this._entityManager = new entity_manager.EntityManager();
     this._grid = new spatial_hash_grid.SpatialHashGrid(
@@ -116,10 +163,13 @@ class HackNSlashDemo {
 
     this._LoadControllers();
     this._LoadPlayer();
-    //this._LoadFoliage();
-   // this._LoadWall();
-   // this._LoadAudio();
-   // this._LoadAudioFootsteps();
+    this._LoadFoliage();
+    //this._LoadWall();
+
+    // this._LoadAudio();
+    // this._LoadAudioFootsteps();
+    //this._LoadVideo()
+
     this._previousRAF = null;
     this._RAF();
    }
@@ -150,9 +200,71 @@ class HackNSlashDemo {
 
   _LoadFoliage() {
 
-    //List of things to load wothin the dungeon
+    //List of things to load within the dungeon
+    
+    // Spawn 10 CommonTrees in the dungeon
+    for (let i = 0; i < 10; ++i) {  // Adjust the number of Rocks spawned
+      const name = 'CommonTree';  // Only spawn CommonTree
+      const index = math.rand_int(1, 4);  // Optionally keep the index, or hardcode if not needed
 
-    for (let i = 0; i < 50; ++i) {
+      const pos = new THREE.Vector3(
+          (Math.random() * 2.0 - 1.0) * 290 / 2,  // Random X position within the plane
+          0,  // Y position (ground level)
+          (Math.random() * 2.0 - 1.0) * 290 / 2  // Random Z position within the plane
+      );
+
+      const e = new entity.Entity();
+      e.AddComponent(new gltf_component.StaticModelComponent({
+        scene: this._scene,
+        resourcePath: './resources/nature/FBX/',
+        resourceName: name + '_' + index + '.fbx',  // Load CommonTree model
+        scale: 0.1,  // Set custom scale for CommonTree (adjust as needed)
+        emissive: new THREE.Color(0x000000),
+        specular: new THREE.Color(0x000000),
+        receiveShadow: true,
+        castShadow: true,
+      }));
+
+      e.AddComponent(
+        new spatial_grid_controller.SpatialGridController({ grid: this._grid })
+      );
+      e.SetPosition(pos);
+      this._entityManager.Add(e);
+      e.SetActive(false);
+    }
+
+    // Spawn 10 CommonTrees in the dungeon
+    for (let i = 0; i < 10; ++i) {  // Adjust the number of Rocks spawned
+      const name = 'Willow';  // Only spawn CommonTree
+      const index = math.rand_int(1, 4);  // Optionally keep the index, or hardcode if not needed
+
+      const pos = new THREE.Vector3(
+          (Math.random() * 2.0 - 1.0) * 290 / 2,  // Random X position within the plane
+          0,  // Y position (ground level)
+          (Math.random() * 2.0 - 1.0) * 290 / 2  // Random Z position within the plane
+      );
+
+      const e = new entity.Entity();
+      e.AddComponent(new gltf_component.StaticModelComponent({
+        scene: this._scene,
+        resourcePath: './resources/nature/FBX/',
+        resourceName: name + '_' + index + '.fbx',  // Load CommonTree model
+        scale: 0.15,  // Set custom scale for CommonTree (adjust as needed)
+        emissive: new THREE.Color(0x000000),
+        specular: new THREE.Color(0x000000),
+        receiveShadow: true,
+        castShadow: true,
+      }));
+
+      e.AddComponent(
+        new spatial_grid_controller.SpatialGridController({ grid: this._grid })
+      );
+      e.SetPosition(pos);
+      this._entityManager.Add(e);
+      e.SetActive(false);
+    }
+
+    /*for (let i = 0; i < 50; ++i) {
       const names = [
         'CommonTree_Dead', 'CommonTree',
         'BirchTree', 'BirchTree_Dead',
@@ -164,9 +276,9 @@ class HackNSlashDemo {
       const index = math.rand_int(1, 4);
 
       const pos = new THREE.Vector3(
-          (Math.random() * 2.0 - 1.0) * 250/2,
+          (Math.random() * 2.0 - 1.0) * 300/2,
           0,
-          (Math.random() * 2.0 - 1.0) * 250/2);
+          (Math.random() * 2.0 - 1.0) * 300/2);
 
       const e = new entity.Entity();
       e.AddComponent(new gltf_component.StaticModelComponent({
@@ -184,7 +296,7 @@ class HackNSlashDemo {
       e.SetPosition(pos);
       this._entityManager.Add(e);
       e.SetActive(false);
-    }
+    }*/
   }
   _LoadAudio() {
     const listener = new THREE.AudioListener();
@@ -348,6 +460,8 @@ _OnKeyRelease(event) {
     player.AddComponent(
         new spatial_grid_controller.SpatialGridController({grid: this._grid}));
     player.AddComponent(new attack_controller.AttackController({timing: 0.7}));
+    // Set the player's position to a specific corner (e.g., bottom-left corner)
+    //player.SetPosition(new THREE.Vector3(-150, 0, -150));
     this._entityManager.Add(player, 'player');
 
     player.Broadcast({
@@ -378,15 +492,121 @@ _OnKeyRelease(event) {
         value: sword.Name,
         added: false,
     });
-
     const camera = new entity.Entity();
+camera.AddComponent(
+    new third_person_camera.ThirdPersonCamera({
+        camera: this._camera,
+        target: this._entityManager.Get('player')
+    })
+);
+this._entityManager.Add(camera, 'player-camera');
+
+// Define the positions of the four corners
+const corners = [
+    new THREE.Vector3(-100, 0, -100), // Bottom-left corner
+    new THREE.Vector3(60, 0, -60),  // Bottom-right corner
+    new THREE.Vector3(-90, 0, 90),  // Top-left corner
+    new THREE.Vector3(70, 0, 70)    // Top-right corner
+];
+
+let cornerIndex = 0;  // To track which corner to spawn in
+
+// Spawn 20 monsters (5 in each corner)
+for (let i = 0; i < 20; ++i) {
+    const monsters = [
+        {
+            resourceName: 'Ghost.fbx',
+            resourceTexture: 'Ghost_Texture.png',
+            health: 100,
+            strength: 5
+        },
+        {
+            resourceName: 'Alien.fbx',
+            resourceTexture: 'Alien_Texture.png',
+            health: 80,
+            strength: 2
+        },
+        {
+            resourceName: 'Skull.fbx',
+            resourceTexture: 'Skull_Texture.png',
+            health: 60,
+            strength: 2
+        },
+        {
+            resourceName: 'GreenDemon.fbx',
+            resourceTexture: 'GreenDemon_Texture.png',
+            health: 120,
+            strength: 6
+        },
+        {
+            resourceName: 'Cyclops.fbx',
+            resourceTexture: 'Cyclops_Texture.png',
+            health: 120,
+            strength: 3
+        },
+        {
+            resourceName: 'Cactus.fbx',
+            resourceTexture: 'Cactus_Texture.png',
+            health: 80,
+            strength: 1
+        },
+    ];
+    const m = monsters[math.rand_int(0, monsters.length - 1)];
+
+    const npc = new entity.Entity();
+    npc.AddComponent(new npc_entity.NPCController({
+        camera: this._camera,
+        scene: this._scene,
+        resourceName: m.resourceName,
+        resourceTexture: m.resourceTexture,
+    }));
+    npc.AddComponent(
+        new health_component.HealthComponent({
+            health: m.health,
+            maxHealth: m.health,
+            strength: m.strength,
+            wisdomness: 2,
+            benchpress: 3,
+            curl: 1,
+            experience: 0,
+            level: 2,
+            camera: this._camera,
+            scene: this._scene,
+        })
+    );
+    npc.AddComponent(
+        new spatial_grid_controller.SpatialGridController({ grid: this._grid })
+    );
+    npc.AddComponent(new health_bar.HealthBar({
+        parent: this._scene,
+        camera: this._camera,
+    }));
+    npc.AddComponent(new attack_controller.AttackController({ timing: 0.35 }));
+
+    // Set the position based on the corner, with a small offset to avoid exact stacking
+    const offsetX = (Math.random() * 50) - 10;  // Random small offset for variation
+    const offsetZ = (Math.random() * 50) - 10;
+    const position = corners[cornerIndex].clone();
+    position.x += offsetX;
+    position.z += offsetZ;
+
+    npc.SetPosition(position);
+
+    this._entityManager.Add(npc);
+
+    // After every 5 monsters, move to the next corner
+    if ((i + 1) % 5 === 0) {
+        cornerIndex = (cornerIndex + 1) % corners.length;
+    }
+}
+    /*const camera = new entity.Entity();
     camera.AddComponent(
         new third_person_camera.ThirdPersonCamera({
             camera: this._camera,
             target: this._entityManager.Get('player')}));
     this._entityManager.Add(camera, 'player-camera');
 
-    // this handlees monsters and the npc enables them to run by themselves;
+    // this handles monsters and the npc enables them to run by themselves;
     for (let i = 0; i < 10; ++i) {
       const monsters = [
         {
@@ -446,11 +666,11 @@ _OnKeyRelease(event) {
       }));
       npc.AddComponent(new attack_controller.AttackController({timing: 0.35}));
       npc.SetPosition(new THREE.Vector3(
-          (Math.random() * 2 - 1) * 250/2,
+          (Math.random() * 2 - 1) * 300/2,
           0,
-          (Math.random() * 2 - 1) * 250/2));
+          (Math.random() * 2 - 1) * 300/2));
       this._entityManager.Add(npc);
-    }
+    }*/
   }
 
   _OnWindowResize() {
@@ -497,5 +717,12 @@ _OnKeyRelease(event) {
 let _APP = null;
 
 window.addEventListener('DOMContentLoaded', () => {
-  _APP = new HackNSlashDemo();
+  displayMenu();
+  
+  
 });
+
+document.getElementById('SinglePlayerBtn').addEventListener('click', ()=>{
+  document.getElementById('menuScreen').style.display = 'none';
+  _APP = new HackNSlashDemo();
+})

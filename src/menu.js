@@ -237,7 +237,22 @@ function showSettings(){
         changeDifficultyDiv.className = 'pickOption active';
     
         difficulty = 'EASY';
-        window.localStorage.setItem('difficaulty', 'EASY');
+        //console.log('EASY button clicked');
+        // Set attributes for EASY mode for each monster
+        window.localStorage.setItem('difficulty', 'EASY');
+        window.localStorage.setItem('ghost_health', '70');
+        window.localStorage.setItem('ghost_strength', '1');
+        window.localStorage.setItem('alien_health', '60');
+        window.localStorage.setItem('alien_strength', '1');
+        window.localStorage.setItem('skull_health', '50');
+        window.localStorage.setItem('skull_strength', '1');
+        window.localStorage.setItem('greendemon_health', '100');
+        window.localStorage.setItem('greendemon_strength', '2');
+        window.localStorage.setItem('cyclops_health', '80');
+        window.localStorage.setItem('cyclops_strength', '2');
+        window.localStorage.setItem('cactus_health', '60');
+        window.localStorage.setItem('cactus_strength', '1');
+        
     })
     
     document.getElementById('MEDIUM').addEventListener('click', ()=>{
@@ -252,7 +267,20 @@ function showSettings(){
         changeDifficultyDiv.className = 'pickOption active';
     
         difficulty = 'MEDIUM'
-        window.localStorage.setItem('difficaulty', 'MEDIUM')
+        //console.log('Med button clicked');
+        window.localStorage.setItem('difficulty', 'MEDIUM')
+        window.localStorage.setItem('ghost_health', '105');
+        window.localStorage.setItem('ghost_strength', '1.5');
+        window.localStorage.setItem('alien_health', '90');
+        window.localStorage.setItem('alien_strength', '1.5');
+        window.localStorage.setItem('skull_health', '75');
+        window.localStorage.setItem('skull_strength', '1.5');
+        window.localStorage.setItem('greendemon_health', '150');
+        window.localStorage.setItem('greendemon_strength', '3');
+        window.localStorage.setItem('cyclops_health', '120');
+        window.localStorage.setItem('cyclops_strength', '3');
+        window.localStorage.setItem('cactus_health', '90');
+        window.localStorage.setItem('cactus_strength', '1.5');
     })
     
     document.getElementById('HARD').addEventListener('click', ()=>{
@@ -267,7 +295,20 @@ function showSettings(){
         changeDifficultyDiv.className = 'pickOption active';
     
         difficulty = 'HARD'
-        window.localStorage.setItem('difficaulty', 'HARD');
+        //console.log('Hard button clicked');
+        window.localStorage.setItem('difficulty', 'HARD');
+        window.localStorage.setItem('ghost_health', '140');
+        window.localStorage.setItem('ghost_strength', '2');
+        window.localStorage.setItem('alien_health', '120');
+        window.localStorage.setItem('alien_strength', '2');
+        window.localStorage.setItem('skull_health', '100');
+        window.localStorage.setItem('skull_strength', '2');
+        window.localStorage.setItem('greendemon_health', '200');
+        window.localStorage.setItem('greendemon_strength', '4');
+        window.localStorage.setItem('cyclops_health', '160');
+        window.localStorage.setItem('cyclops_strength', '4');
+        window.localStorage.setItem('cactus_health', '120');
+        window.localStorage.setItem('cactus_strength', '2');
     })
     
     

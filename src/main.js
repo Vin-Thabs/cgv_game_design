@@ -489,6 +489,8 @@ camera.AddComponent(
 );
 this._entityManager.Add(camera, 'player-camera');
 
+let difficulty = window.localStorage.getItem('difficulty') || 'MEDIUM';  // Default to 'MEDIUM' if nothing is set
+
 // Define the positions of the four corners
 const corners = [
     new THREE.Vector3(-100, 0, -100), // Bottom-left corner
@@ -500,43 +502,43 @@ const corners = [
 let cornerIndex = 0;  // To track which corner to spawn in
 
 // Spawn 20 monsters (5 in each corner)
-for (let i = 0; i < 20; ++i) {
+  for (let i = 0; i < 20; ++i) {
     const monsters = [
         {
             resourceName: 'Ghost.fbx',
             resourceTexture: 'Ghost_Texture.png',
-            health: 100,
-            strength: 5
+            health: parseInt(window.localStorage.getItem('ghost_health')) || 90,  // Use stored health or default
+            strength: parseFloat(window.localStorage.getItem('ghost_strength')) || 3  // Use stored strength or default
         },
         {
             resourceName: 'Alien.fbx',
             resourceTexture: 'Alien_Texture.png',
-            health: 80,
-            strength: 2
+            health: parseInt(window.localStorage.getItem('alien_health')) || 80,
+            strength: parseFloat(window.localStorage.getItem('alien_strength')) || 2
         },
         {
             resourceName: 'Skull.fbx',
             resourceTexture: 'Skull_Texture.png',
-            health: 60,
-            strength: 2
+            health: parseInt(window.localStorage.getItem('skull_health')) || 60,
+            strength: parseFloat(window.localStorage.getItem('skull_strength')) || 2
         },
         {
             resourceName: 'GreenDemon.fbx',
             resourceTexture: 'GreenDemon_Texture.png',
-            health: 120,
-            strength: 6
+            health: parseInt(window.localStorage.getItem('greendemon_health')) || 120,
+            strength: parseFloat(window.localStorage.getItem('greendemon_strength')) || 3
         },
         {
             resourceName: 'Cyclops.fbx',
             resourceTexture: 'Cyclops_Texture.png',
-            health: 120,
-            strength: 3
+            health: parseInt(window.localStorage.getItem('cyclops_health')) || 100,
+            strength: parseFloat(window.localStorage.getItem('cyclops_strength')) || 3
         },
         {
             resourceName: 'Cactus.fbx',
             resourceTexture: 'Cactus_Texture.png',
-            health: 80,
-            strength: 1
+            health: parseInt(window.localStorage.getItem('cactus_health')) || 80,
+            strength: parseFloat(window.localStorage.getItem('cactus_strength')) || 1
         },
     ];
     const m = monsters[math.rand_int(0, monsters.length - 1)];
@@ -548,11 +550,16 @@ for (let i = 0; i < 20; ++i) {
         resourceName: m.resourceName,
         resourceTexture: m.resourceTexture,
     }));
+    const adjustedStats = {
+      health: m.health,
+      strength: m.strength
+  };
+    //console.log(`Monster: ${m.resourceName}, Difficulty: ${difficulty}, Health: ${adjustedStats.health}, Strength: ${adjustedStats.strength}`);
     npc.AddComponent(
         new health_component.HealthComponent({
-            health: m.health,
-            maxHealth: m.health,
-            strength: m.strength,
+            health: adjustedStats.health,
+            maxHealth: adjustedStats.health,
+            strength: adjustedStats.strength,
             wisdomness: 2,
             benchpress: 3,
             curl: 1,
@@ -587,76 +594,6 @@ for (let i = 0; i < 20; ++i) {
         cornerIndex = (cornerIndex + 1) % corners.length;
     }
 }
-    /*const camera = new entity.Entity();
-    camera.AddComponent(
-        new third_person_camera.ThirdPersonCamera({
-            camera: this._camera,
-            target: this._entityManager.Get('player')}));
-    this._entityManager.Add(camera, 'player-camera');
-
-    // this handles monsters and the npc enables them to run by themselves;
-    for (let i = 0; i < 10; ++i) {
-      const monsters = [
-        {
-          resourceName: 'Ghost.fbx',
-          resourceTexture: 'Ghost_Texture.png',
-        },
-        {
-          resourceName: 'Alien.fbx',
-          resourceTexture: 'Alien_Texture.png',
-        },
-        {
-          resourceName: 'Skull.fbx',
-          resourceTexture: 'Skull_Texture.png',
-        },
-        {
-          resourceName: 'GreenDemon.fbx',
-          resourceTexture: 'GreenDemon_Texture.png',
-        },
-        {
-          resourceName: 'Cyclops.fbx',
-          resourceTexture: 'Cyclops_Texture.png',
-        },
-        {
-          resourceName: 'Cactus.fbx',
-          resourceTexture: 'Cactus_Texture.png',
-        },
-      ];
-      const m = monsters[math.rand_int(0, monsters.length - 1)];
-
-      const npc = new entity.Entity();
-      npc.AddComponent(new npc_entity.NPCController({
-          camera: this._camera,
-          scene: this._scene,
-          resourceName: m.resourceName,
-          resourceTexture: m.resourceTexture,
-      }));
-      npc.AddComponent(
-          new health_component.HealthComponent({
-              health: 100,
-              maxHealth: 100,
-              strength: 2,
-              wisdomness: 2,
-              benchpress: 3,
-              curl: 1,
-              experience: 0,
-              level: 2,
-              camera: this._camera,
-              scene: this._scene,
-          }));
-      npc.AddComponent(
-          new spatial_grid_controller.SpatialGridController({grid: this._grid}));
-      npc.AddComponent(new health_bar.HealthBar({
-          parent: this._scene,
-          camera: this._camera,
-      }));
-      npc.AddComponent(new attack_controller.AttackController({timing: 0.35}));
-      npc.SetPosition(new THREE.Vector3(
-          (Math.random() * 2 - 1) * 300/2,
-          0,
-          (Math.random() * 2 - 1) * 300/2));
-      this._entityManager.Add(npc);
-    }*/
   }
 
   _OnWindowResize() {

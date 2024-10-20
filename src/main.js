@@ -19,6 +19,7 @@ import {inventory_controller} from './inventory-controller.js';
 import {equip_weapon_component} from './equip-weapon-component.js';
 import {attack_controller} from './attacker-controller.js';
 import { MazeGenerator } from './wall.js';
+import { displayMenu, volume, difficulty, waveLength} from './menu.js';
 
 
 // const _VS = `
@@ -702,5 +703,12 @@ for (let i = 0; i < 20; ++i) {
 let _APP = null;
 
 window.addEventListener('DOMContentLoaded', () => {
-  _APP = new HackNSlashDemo();
+  displayMenu();
+  
+  
 });
+
+document.getElementById('SinglePlayerBtn').addEventListener('click', ()=>{
+  document.getElementById('menuScreen').style.display = 'none';
+  _APP = new HackNSlashDemo();
+})

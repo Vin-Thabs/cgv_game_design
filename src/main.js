@@ -584,8 +584,8 @@ for (let i = 0; i < 20; ++i) {
     npc.AddComponent(new attack_controller.AttackController({ timing: 0.35 }));
 
     // Set the position based on the corner, with a small offset to avoid exact stacking
-    const offsetX = (Math.random() * 50) - 10;  // Random small offset for variation
-    const offsetZ = (Math.random() * 50) - 10;
+    const offsetX = (Math.random() * 50) - 20;  // Random small offset for variation
+    const offsetZ = (Math.random() * 50) - 20;
     const position = corners[cornerIndex].clone();
     position.x += offsetX;
     position.z += offsetZ;
@@ -718,8 +718,6 @@ let _APP = null;
 
 window.addEventListener('DOMContentLoaded', () => {
   displayMenu();
-  
-  
 });
 
 document.getElementById('SinglePlayerBtn').addEventListener('click', ()=>{

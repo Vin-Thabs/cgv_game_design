@@ -1,6 +1,6 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118.1/build/three.module.js';
 
-import {entity} from './entity.js';
+
 
 export class MazeGenerator {
   constructor(scene) {
@@ -114,4 +114,62 @@ export class MazeGenerator {
       }
     }
   }
+
+  getWallPositions() {
+    const wallPositions = [];
+    const halfCell = this._cellSize / 2;
+
+    // Iterate through each cell of the maze
+    for (let y = 0; y < this._mazeHeight; y++) {
+      for (let x = 0; x < this._mazeWidth; x++) {
+        const cell = this._maze[y][x];
+        const posX = x * this._cellSize - (this._mazeWidth * this._cellSize) / 2;
+        const posY = y * this._cellSize - (this._mazeHeight * this._cellSize) / 2;
+
+        // For each wall in the cell, calculate the grid points it covers
+
+        // Top wall (horizontal, spans along X axis)
+        if (cell.walls[0]) {
+          wallPositions.push(...this._getCoveredPoints(posX - halfCell, posX + halfCell, posY - halfCell, posY - halfCell));
+        }
+
+        // Right wall (vertical, spans along Y axis)
+        if (cell.walls[1]) {
+          wallPositions.push(...this._getCoveredPoints(posX + halfCell, posX + halfCell, posY - halfCell, posY + halfCell));
+        }
+
+        // Bottom wall (horizontal, spans along X axis)
+        if (cell.walls[2]) {
+          wallPositions.push(...this._getCoveredPoints(posX - halfCell, posX + halfCell, posY + halfCell, posY + halfCell));
+        }
+
+        // Left wall (vertical, spans along Y axis)
+        if (cell.walls[3]) {
+          wallPositions.push(...this._getCoveredPoints(posX - halfCell, posX - halfCell, posY - halfCell, posY + halfCell));
+        }
+      }
+    }
+
+    return wallPositions;
+  }
+
+  // Helper function to return all grid points covered by the wall
+  _getCoveredPoints(startX, endX, startY, endY) {
+    const coveredPoints = [];
+
+    const minX = Math.min(startX, endX);
+    const maxX = Math.max(startX, endX);
+    const minY = Math.min(startY, endY);
+    const maxY = Math.max(startY, endY);
+
+    // Loop over every integer point in the covered range
+    for (let x = Math.floor(minX); x <= Math.ceil(maxX); x++) {
+      for (let y = Math.floor(minY); y <= Math.ceil(maxY); y++) {
+        coveredPoints.push(new THREE.Vector3(x, this._wallHeight / 2, y));
+      }
+    }
+
+    return coveredPoints;
+  }
+
 }

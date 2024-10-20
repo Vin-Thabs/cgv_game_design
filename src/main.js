@@ -81,10 +81,10 @@ class HackNSlashDemo {
     this._camera.position.set(25, 10, 25);
 
     this._scene = new THREE.Scene();
-    this._scene.background = new THREE.Color(0xD3D3D3);
-    this._scene.fog = new THREE.FogExp2(0x36454F, 0.02);//fog
+    this._scene.background = new THREE.Color(0xFFFFFF);
+    this._scene.fog = new THREE.FogExp2(0X5A5A5A, 0.04);//fog
 
-    let light = new THREE.DirectionalLight(0xD3D3D3, 0.2);
+    let light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     light.position.set(-10, 500, 10);
     light.target.position.set(0, 0, 0);
     light.castShadow = true;
@@ -168,7 +168,6 @@ class HackNSlashDemo {
 
     // this._LoadAudio();
     // this._LoadAudioFootsteps();
-    //this._LoadVideo()
 
     this._previousRAF = null;
     this._RAF();
@@ -180,10 +179,22 @@ class HackNSlashDemo {
     this._entityManager.Add(ui, 'ui');
   }
 
- /* _LoadWall() {
+  _LoadWall() {
     const mazeGenerator = new MazeGenerator(this._scene);
     mazeGenerator.buildMaze();
-  }*/
+
+    const wallpos = mazeGenerator.getWallPositions();
+
+    for (let index = 0; index < wallpos.length; index++) {
+      const element = wallpos[index];
+      const walls  = new entity.Entity();
+      walls.AddComponent(
+        new spatial_grid_controller.SpatialGridController({grid: this._grid}));
+      walls.SetPosition(element);
+      this._entityManager.Add(walls);
+      walls.SetActive(false);
+      }
+  }
   
 
   _LoadFoliage() {
@@ -252,60 +263,22 @@ class HackNSlashDemo {
       e.SetActive(false);
     }
 
-    /*for (let i = 0; i < 50; ++i) {
-      const names = [
-          'CommonTree_Dead', 'CommonTree',
-          'BirchTree', 'BirchTree_Dead',
-          'Willow', 'Willow_Dead',
-          'P,ineTree'
-          
-      ];
-      const name = names[math.rand_int(0, names.length - 1)];
-      const index = math.rand_int(1, 4);
-
-      const pos = new THREE.Vector3(
-          (Math.random() * 2.0 - 1.0) * 300/2,
-          0,
-          (Math.random() * 2.0 - 1.0) * 300/2);
-
-      const e = new entity.Entity();
-      e.AddComponent(new gltf_component.StaticModelComponent({
-        scene: this._scene,
-        resourcePath: './resources/nature/FBX/',
-        resourceName: name + '_' + index + '.fbx',
-        scale: 0.25,
-        emissive: new THREE.Color(0x000000),
-        specular: new THREE.Color(0x000000),
-        receiveShadow: true,
-        castShadow: true,
-      }));
-      e.AddComponent(
-          new spatial_grid_controller.SpatialGridController({grid: this._grid}));
-      e.SetPosition(pos);
-      this._entityManager.Add(e);
-      e.SetActive(false);
-    }*/
   }
   _LoadAudio() {
     const listener = new THREE.AudioListener();
     this._camera.add(listener);
 
-    // Create a global audio source
     this._sound = new THREE.Audio(listener);
 
-    // Load a sound and set it as the audio object's buffer
     const audioLoader = new THREE.AudioLoader();
     audioLoader.load('../resources/Music/theme.mp3', (buffer) => {
         this._sound.setBuffer(buffer);
-        this._sound.setLoop(true);   // Loop the background music
-        this._sound.setVolume(0.5);  // Adjust volume as needed
-        // Play only if not already playing
+        this._sound.setLoop(true);   
+        this._sound.setVolume(0.5);  
         if (!this._sound.isPlaying) {
             this._sound.play();
         }
     });
-
-    //Resume audio context after user interaction if suspended
     window.addEventListener('click', () => {
         if (listener.context.state === 'suspended') {
             listener.context.resume();
@@ -313,89 +286,40 @@ class HackNSlashDemo {
     });
  }
 
-//  _LoadAudio() {
-//   const listener = new THREE.AudioListener();
-//   this._camera.add(listener);
-
-//   // Create an audio source for background music
-//   this._audio = new THREE.Audio(listener);
-
-//   // Load the audio file
-//   const audioLoader = new THREE.AudioLoader();
-//   audioLoader.load('../resources/Sounds/background-music.mp3', (buffer) => {
-//       this._audio.setBuffer(buffer);
-//       this._audio.setLoop(true); // Loop the music
-//       this._audio.setVolume(0.5); // Adjust volume as needed
-//       this._audio.play();         // Play audio automatically after loading
-//   });
-// }
 
 
  _LoadAudioFootsteps() {
   const listener = new THREE.AudioListener();
   this._camera.add(listener);
-
-  // Create a separate audio source for footsteps
   this._footstepSound = new THREE.Audio(listener);
 
-  // Load the footstep sound
   const audioLoader = new THREE.AudioLoader();
   audioLoader.load('../resources/Music/forever.mp3', (buffer) => {
       this._footstepSound.setBuffer(buffer);
-      this._footstepSound.setLoop(true);   // Loop the footstep sound
-      this._footstepSound.setVolume(1);  // Adjust volume as needed
+      this._footstepSound.setLoop(true);   
+      this._footstepSound.setVolume(1);  
   });
 
-  // Add event listeners for key press and key release
   document.addEventListener('keydown', (event) => this._OnKeyPress(event));
   document.addEventListener('keyup', (event) => this._OnKeyRelease(event));
 }
 
 _OnKeyPress(event) {
-  // Check if one of the movement keys is pressed and footstep sound isn't already playing
+
   if (['KeyW', 'KeyS'].includes(event.code)) {
     if (!this._footstepSound.isPlaying) {
-      this._footstepSound.play();  // Play footstep sound on movement
+      this._footstepSound.play();  
     }
   }
 }
 
-_LoadVideo() {
-  // Create a video element
-  const video = document.createElement('video');
-  
-  // Set video attributes
-  video.src = '../resources/Video/hello.mp4'; // Replace with your video file path
-  video.crossOrigin = 'anonymous'; // Optional: For cross-origin requests
-  video.loop = true; // Loop the video if desired
-  video.muted = true; // Mute the video if you don't want sound
-  video.style.position = 'absolute'; // Positioning the video
-  video.style.top = '0'; // Adjust as necessary
-  video.style.left = '0'; // Adjust as necessary
-  video.style.width = '100%'; // Fullscreen width
-  video.style.height = '100%'; // Fullscreen height
-  video.style.zIndex = '0'; // Background layer
 
-  // Append the video to the container (make sure it exists in your HTML)
-  document.getElementById('container').appendChild(video);
-  
-  // Play the video automatically
-  video.play().catch(error => {
-      console.error('Error attempting to play video:', error);
-  });
-
-  // Optionally, handle video end event
-  video.addEventListener('ended', () => {
-      // Perform any actions when video ends, if needed
-  });
-}
 
 
 _OnKeyRelease(event) {
-  // Stop the footstep sound when the movement keys are released
   if (['KeyW', 'KeyS'].includes(event.code)) {
     if (this._footstepSound.isPlaying) {
-      this._footstepSound.stop();  // Stop the footstep sound when movement stops
+      this._footstepSound.stop();  
     }
   }
 }
@@ -415,22 +339,22 @@ _OnKeyRelease(event) {
     }));
     this._entityManager.Add(levelUpSpawner, 'level-up-spawner');
 
-    // const axe = new entity.Entity();
-    // axe.AddComponent(new inventory_controller.InventoryItem({
-    //     type: 'weapon',
-    //     damage: 3,
-    //     renderParams: {
-    //       name: 'Axe',
-    //       scale: 0.25,
-    //       icon: 'war-axe-64.png',
-    //     },
-    // }));
-    //this._entityManager.Add(axe);
+    const axe = new entity.Entity();
+    axe.AddComponent(new inventory_controller.InventoryItem({
+        type: 'weapon',
+        damage: 0.7,
+        renderParams: {
+          name: 'Axe',
+          scale: 0.25,
+          icon: 'war-axe-64.png',
+        },
+    }));
+    this._entityManager.Add(axe);
 
     const sword = new entity.Entity();
     sword.AddComponent(new inventory_controller.InventoryItem({
         type: 'weapon',
-        damage: 3,
+        damage: 0.5,
         renderParams: {
           name: 'Sword',
           scale: 0.25,
@@ -438,6 +362,49 @@ _OnKeyRelease(event) {
         },
     }));
     this._entityManager.Add(sword);
+
+    const spear  = new entity.Entity();
+    spear.AddComponent(new inventory_controller.InventoryItem({
+        type: 'weapon',
+        damage: 0.3,
+        renderParams: {
+          name: 'Spear',
+          scale: 0.25,
+          icon: 'spear-hook.png',
+        },
+    }));
+    this._entityManager.Add(spear);
+
+    const scythe  = new entity.Entity();
+    scythe.AddComponent(new inventory_controller.InventoryItem({
+        type: 'weapon',
+        damage: 2,
+        renderParams: {
+          name: 'Scythe',
+          scale: 0.4,
+          icon: 'scythe.png',
+        },
+    }));
+    this._entityManager.Add(scythe);
+
+
+    const girl = new entity.Entity();
+    girl.AddComponent(new gltf_component.AnimatedModelComponent({
+        scene: this._scene,
+        resourcePath: './resources/girl/',
+        resourceName: 'peasant_girl.fbx',
+        resourceAnimation: 'Standing Idle.fbx',
+        scale: 0.035,
+        receiveShadow: true,
+        castShadow: true,
+    }));
+    girl.AddComponent(new spatial_grid_controller.SpatialGridController({
+        grid: this._grid,
+    }));
+    girl.AddComponent(new player_input.PickableComponent());
+    girl.AddComponent(new quest_component.QuestComponent());
+    girl.SetPosition(new THREE.Vector3(30, 0, 0));
+    this._entityManager.Add(girl);
 
     const player = new entity.Entity();
     player.AddComponent(new player_input.BasicCharacterControllerInput(params));
@@ -463,11 +430,22 @@ _OnKeyRelease(event) {
     //player.SetPosition(new THREE.Vector3(-150, 0, -150));
     this._entityManager.Add(player, 'player');
 
-    // player.Broadcast({
-    //     topic: 'inventory.add',
-    //     value: axe.Name,
-    //     added: false,
-    // });
+    player.Broadcast({
+        topic: 'inventory.add',
+        value: axe.Name,
+        added: false,
+    });
+
+    player.Broadcast({
+      topic: 'inventory.add',
+      value: spear.Name,
+      added: false,
+    });
+    player.Broadcast({
+      topic: 'inventory.add',
+      value: scythe.Name,
+      added: false,
+    });
 
     player.Broadcast({
         topic: 'inventory.add',
@@ -579,8 +557,8 @@ let cornerIndex = 0;  // To track which corner to spawn in
     npc.AddComponent(new attack_controller.AttackController({ timing: 0.35 }));
 
     // Set the position based on the corner, with a small offset to avoid exact stacking
-    const offsetX = (Math.random() * 50) - 10;  // Random small offset for variation
-    const offsetZ = (Math.random() * 50) - 10;
+    const offsetX = (Math.random() * 50) - 20;  // Random small offset for variation
+    const offsetZ = (Math.random() * 50) - 20;
     const position = corners[cornerIndex].clone();
     position.x += offsetX;
     position.z += offsetZ;
@@ -641,8 +619,6 @@ let _APP = null;
 
 window.addEventListener('DOMContentLoaded', () => {
   displayMenu();
-  
-  
 });
 
 document.getElementById('SinglePlayerBtn').addEventListener('click', ()=>{

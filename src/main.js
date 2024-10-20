@@ -82,7 +82,7 @@ class HackNSlashDemo {
 
     this._scene = new THREE.Scene();
     this._scene.background = new THREE.Color(0xFFFFFF);
-    this._scene.fog = new THREE.FogExp2(0x89b2eb, 0);//fog
+    this._scene.fog = new THREE.FogExp2(0X5A5A5A, 0.04);//fog
 
     let light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     light.position.set(-10, 500, 10);
@@ -168,7 +168,6 @@ class HackNSlashDemo {
 
     // this._LoadAudio();
     // this._LoadAudioFootsteps();
-    //this._LoadVideo()
 
     this._previousRAF = null;
     this._RAF();
@@ -264,39 +263,6 @@ class HackNSlashDemo {
       e.SetActive(false);
     }
 
-    /*for (let i = 0; i < 50; ++i) {
-      const names = [
-        'CommonTree_Dead', 'CommonTree',
-        'BirchTree', 'BirchTree_Dead',
-        'Willow', 'Willow_Dead',
-        'PineTree',
-    ];
-
-      const name = names[math.rand_int(0, names.length - 1)];
-      const index = math.rand_int(1, 4);
-
-      const pos = new THREE.Vector3(
-          (Math.random() * 2.0 - 1.0) * 300/2,
-          0,
-          (Math.random() * 2.0 - 1.0) * 300/2);
-
-      const e = new entity.Entity();
-      e.AddComponent(new gltf_component.StaticModelComponent({
-        scene: this._scene,
-        resourcePath: './resources/nature/FBX/',
-        resourceName: name +'_' + index + '.fbx',
-        scale: 0.05,
-        emissive: new THREE.Color(0x000000),
-        specular: new THREE.Color(0x000000),
-        receiveShadow: true,
-        castShadow: true,
-      }));
-      e.AddComponent(
-          new spatial_grid_controller.SpatialGridController({grid: this._grid}));
-      e.SetPosition(pos);
-      this._entityManager.Add(e);
-      e.SetActive(false);
-    }*/
   }
   _LoadAudio() {
     const listener = new THREE.AudioListener();
@@ -599,78 +565,6 @@ for (let i = 0; i < 20; ++i) {
         cornerIndex = (cornerIndex + 1) % corners.length;
     }
 }
-    /*const camera = new entity.Entity();
-    camera.AddComponent(
-        new third_person_camera.ThirdPersonCamera({
-            camera: this._camera,
-            target: this._entityManager.Get('player')}));
-    this._entityManager.Add(camera, 'player-camera');
-
-    // this handles monsters and the npc enables them to run by themselves;
-    for (let i = 0; i < 10; ++i) {
-      const monsters = [
-        {
-          resourceName: 'Ghost.fbx',
-          resourceTexture: 'Ghost_Texture.png',
-        },
-        {
-          resourceName: 'Alien.fbx',
-          resourceTexture: 'Alien_Texture.png',
-        },
-        {
-          resourceName: 'Skull.fbx',
-          resourceTexture: 'Skull_Texture.png',
-        },
-        {
-          resourceName: 'GreenDemon.fbx',
-          resourceTexture: 'GreenDemon_Texture.png',
-        },
-        {
-          resourceName: 'Cyclops.fbx',
-          resourceTexture: 'Cyclops_Texture.png',
-        },
-        {
-          resourceName: 'Cactus.fbx',
-          resourceTexture: 'Cactus_Texture.png',
-        },
-      ];
-      const scalar = math.rand_int(0, monsters.length - 1);
-      // const m = monsters[math.rand_int(0, monsters.length - 1)];
-      const m = monsters[scalar];
-
-      const npc = new entity.Entity();
-      npc.AddComponent(new npc_entity.NPCController({
-          camera: this._camera,
-          scene: this._scene,
-          resourceName: m.resourceName,
-          resourceTexture: m.resourceTexture,
-      }));
-      npc.AddComponent(
-          new health_component.HealthComponent({
-              health: 100,
-              maxHealth: 100,
-              strength: 1,
-              wisdomness: 2,
-              benchpress: 3,
-              curl: 1,
-              experience: 0,
-              level: (scalar + 1)*2,
-              camera: this._camera,
-              scene: this._scene,
-          }));
-      npc.AddComponent(
-          new spatial_grid_controller.SpatialGridController({grid: this._grid}));
-      npc.AddComponent(new health_bar.HealthBar({
-          parent: this._scene,
-          camera: this._camera,
-      }));
-      npc.AddComponent(new attack_controller.AttackController({timing: 0.35}));
-      npc.SetPosition(new THREE.Vector3(
-          (Math.random() * 2 - 1) * 300/2,
-          0,
-          (Math.random() * 2 - 1) * 300/2));
-      this._entityManager.Add(npc);
-    }*/
   }
 
   _OnWindowResize() {

@@ -49,7 +49,12 @@ export const entity_manager = (() => {
         e.Update(timeElapsed);
       }
     }
+    // Method to return the total number of entities
+    GetEntitiesCount() {
+      return this._entities.length;
+    }
   }
+  
 
   return {
     EntityManager: EntityManager

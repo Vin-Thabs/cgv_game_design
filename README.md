@@ -38,7 +38,7 @@ A failed experiment by a mad scientist intended to **extend human life** goes ho
 - **Shaders:** GLSL (Vertex and Fragment)  
 - **Rendering Techniques:** Shadows, Reflection, Refraction  
 - **Pipeline Features:** Uniform variables, Attributes, Transforms, Framebuffers  
-
+- **ECS (Entity Component System):** Architectural Pattern that follows the composition of inheritance principle that allows greater flexibility in defining entities
 ---
 
 ## Installation | Setup

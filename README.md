@@ -1,7 +1,7 @@
-# Zombie Land
+# Zombie Awakened
 
 ## Overview
-**Zombie Land** is an action-packed shooter game built using **WebGL** and **THREE.js**. Players navigate a 3D city environment filled with hordes of infected humans who have evolved into monsters. The game emphasizes realistic graphics, immersive gameplay, and progressive difficulty.
+**Zombie Awakened** is an action-packed shooter game built using **WebGL** and **THREE.js**. Players navigate a 3D city environment filled with hordes of infected humans who have evolved into monsters. The game emphasizes realistic graphics, immersive gameplay, and progressive difficulty.
 
 The game world leverages **Blender-imported models** and core THREE.js concepts such as Scenes, Cameras, Renderers, Lights, Textures, and Meshes. Advanced features like shadows, reflections, and refractions were implemented using **custom shaders** and the **programmable graphics pipeline**.
 
